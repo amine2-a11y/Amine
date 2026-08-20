@@ -1,62 +1,248 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>PS4 Jailbreak — PSFree UI</title>
-  <style>
-    *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;background:#020711;overflow:hidden}
-    body{
-      font-family:Arial,Helvetica,sans-serif;
-      color:#fff;
-      background:#020711 url("bg.png") center/cover no-repeat fixed;
-      position:relative;
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>PS4 Jailbreak</title>
+    <script src="./bundle.js"></script>
+    <style>
+      :root {
+        --bg: #050914;
+        --panel: rgba(9, 18, 36, 0.78);
+        --panel-2: rgba(13, 28, 54, 0.9);
+        --line: rgba(0, 170, 255, 0.28);
+        --cyan: #00c8ff;
+        --blue: #287bff;
+        --text: #eef7ff;
+        --muted: #91a9c3;
+        --success: #39f2a1;
+      }
+      * { box-sizing: border-box; }
+      html, body { min-height: 100%; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 34px 18px 24px;
+        background:
+          radial-gradient(circle at 50% 10%, rgba(0, 153, 255, .20), transparent 35%),
+          linear-gradient(180deg, rgba(2, 8, 20, .30), rgba(2, 7, 16, .92)),
+          url("bg.jpg") center top / cover fixed no-repeat,
+          var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        text-align: center;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(120deg, transparent 35%, rgba(0, 200, 255, .035) 50%, transparent 65%);
+      }
+      .app {
+        width: min(920px, 100%);
+        margin: 0 auto;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(4, 12, 27, .72);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 12px 35px rgba(0,0,0,.30);
+      }
+      .brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.08em; }
+      .brand-dot { width:10px; height:10px; border-radius:50%; background:var(--cyan); box-shadow:0 0 18px var(--cyan); }
+      .version { color:var(--muted); font-size:12px; }
+      .hero {
+        padding: 34px 24px 28px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: linear-gradient(145deg, rgba(8,18,38,.78), rgba(4,10,22,.62));
+        backdrop-filter: blur(15px);
+        box-shadow: 0 20px 70px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05);
+      }
+      .eyebrow { margin:0 0 8px; color:var(--cyan); font-size:12px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+      h2 { margin:0; font-size:clamp(26px, 5vw, 46px); line-height:1.1; letter-spacing:-.03em; text-shadow:0 0 28px rgba(0,200,255,.18); }
+      .subtitle { margin:12px auto 26px; max-width:650px; color:var(--muted); font-size:14px; }
+      .actions { display:flex; justify-content:center; }
+      #jailbreakBtn {
+        min-width:220px;
+        padding:15px 30px;
+        font-size:17px;
+        font-weight:800;
+        letter-spacing:.02em;
+        color:#fff;
+        background:linear-gradient(135deg, var(--blue), var(--cyan));
+        border:1px solid rgba(255,255,255,.16);
+        border-radius:14px;
+        cursor:pointer;
+        box-shadow:0 10px 30px rgba(0,150,255,.30), inset 0 1px 0 rgba(255,255,255,.24);
+        transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      }
+      #jailbreakBtn:hover:not(:disabled) { transform:translateY(-2px); filter:brightness(1.08); box-shadow:0 14px 38px rgba(0,180,255,.40), inset 0 1px 0 rgba(255,255,255,.28); }
+      #jailbreakBtn:active:not(:disabled) { transform:translateY(0); }
+      #jailbreakBtn:disabled { background:#263448; color:#77879b; cursor:not-allowed; box-shadow:none; }
+      .auto-card {
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        margin-top:18px;
+        padding:10px 14px;
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:12px;
+        background:rgba(255,255,255,.035);
+        color:#c9d7e7;
+        font-size:13px;
+      }
+      #autoRunCheck { accent-color:var(--cyan); width:16px; height:16px; }
+      #countdown { min-width:18px; color:var(--cyan); font-weight:800; }
+      .console-wrap { margin-top:20px; text-align:left; }
+      .console-title { margin:0 0 8px 4px; color:#7892ad; font-size:11px; font-weight:800; letter-spacing:.15em; text-transform:uppercase; }
+      #console {
+        min-height:130px;
+        max-height:330px;
+        overflow:auto;
+        margin:0;
+        padding:16px;
+        font-family:"SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size:12px;
+        line-height:1.65;
+        color:#cfe5ff;
+        background:rgba(1,7,16,.88);
+        border:1px solid rgba(0,200,255,.18);
+        border-radius:16px;
+        box-shadow:inset 0 0 35px rgba(0,100,255,.06);
+        text-align:left;
+      }
+      footer { margin-top:18px; color:#607892; font-size:12px; }
+      footer strong { color:#9ab4cc; }
+      @media (max-width:600px) {
+        body { padding:18px 12px; }
+        .hero { padding:28px 15px 20px; border-radius:20px; }
+        .topbar { border-radius:13px; }
+        #jailbreakBtn { width:100%; }
+      }
+    </style>
+    <script>
+      if (window.applicationCache.status === 0) { // 0: UNCACHED
+        window.location.replace("cache.html");
+      }
+    </script>
+  </head>
+  <body>
+    <main class="app">
+      <div class="topbar">
+        <div class="brand"><span class="brand-dot"></span><span>PS4 JAILBREAK</span></div>
+        <div class="version">PSFree • 7.00 — 9.60</div>
+      </div>
+      <section class="hero">
+        <p class="eyebrow">PSFree Exploit Chain</p>
+        <h2>PS4 Jailbreak</h2>
+        <p class="subtitle">واجهة حديثة ونظيفة لتشغيل PSFree على جهاز PS4 المدعوم.</p>
+        <div class="actions">
+          <button id="jailbreakBtn">Start Jailbreak</button>
+        </div>
+        <label class="auto-card">
+          <input type="checkbox" id="autoRunCheck" checked>
+          <span>Autorun in <span id="countdown">5</span> seconds</span>
+        </label>
+      </section>
+      <section class="console-wrap">
+        <div class="console-title">System Console</div>
+        <pre id="console"></pre>
+      </section>
+      <footer>PSFree UI • Designed by <strong>Feyzee</strong></footer>
+    </main>
+  </body>
+  <script>
+    // Logging utility
+    var outputConsole = document.getElementById("console");
+    window.log = function (msg, color) {
+      if (color === undefined) color = "#cccccc";
+      outputConsole.innerHTML += '<span style="color:' + color + '">' + msg + '</span><br>';
+    };
+    // Event definitions
+    window.addEventListener('error', function (event) {
+      var reason = event.error;
+      var msg = 'Unhandled error\n';
+      if (reason) {
+        msg += reason + '\n';
+        if (reason.sourceURL)
+          msg += reason.sourceURL;
+        if (reason.line)
+          msg += ':' + reason.line;
+        if (reason.column)
+          msg += ':' + reason.column;
+        if (reason.stack)
+          msg += '\n' + reason.stack;
+      } else {
+        msg += 'No error object';
+      }
+      alert(msg);
+      return true;
+    });
+    var autoRunEnabled = true;
+    var countdownValue = 5;
+    var countdownTimer = null;
+    // Button click
+    document.getElementById("jailbreakBtn").addEventListener("click", function () {
+      // Disable to prevent double click
+      document.getElementById("jailbreakBtn").disabled = true;
+      document.getElementById("autoRunCheck").disabled = true;
+      document.getElementById("autoRunCheck").checked = false;
+      document.getElementById("countdown").textContent = "-";
+      if (countdownTimer !== null) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+      outputConsole.textContent = ""; // Clear console log
+      try {
+        doJailBreak();
+      } catch (error) {
+        window.log("An error occured during exploit: " + error, "red");
+      }
+    });
+    // Autorun system
+    var autoRunCheck = document.getElementById('autoRunCheck');
+    var countdownSpan = document.getElementById('countdown');
+    var jailbreakBtn = document.getElementById('jailbreakBtn');
+    // Checkbox control
+    autoRunCheck.addEventListener('change', function () {
+      autoRunEnabled = autoRunCheck.checked;
+      if (!autoRunEnabled) {
+        // Cancel countdown
+        clearInterval(countdownTimer);
+        countdownSpan.textContent = "-";
+      } else {
+        // Restart countdown
+        restartCountdown();
+      }
+    });
+    // Restart countdown
+    function restartCountdown() {
+      clearInterval(countdownTimer);
+      countdownValue = 5;
+      countdownSpan.textContent = countdownValue;
+      countdownTimer = setInterval(function () {
+        if (!autoRunEnabled) {
+          clearInterval(countdownTimer);
+          return;
+        }
+        countdownValue--;
+        countdownSpan.textContent = countdownValue;
+        if (countdownValue <= 0) {
+          clearInterval(countdownTimer);
+          jailbreakBtn.click();  // Call click function
+        }
+      }, 1000);
     }
-    /* Animated HUD layers over the artwork */
-    body:before{
-      content:"";
-      position:absolute;inset:0;pointer-events:none;
-      background:
-        linear-gradient(115deg,transparent 0%,rgba(0,140,255,.05) 45%,rgba(0,190,255,.18) 50%,rgba(0,140,255,.05) 55%,transparent 100%);
-      background-size:220% 100%;
-      animation:sweep 7s linear infinite;
-      mix-blend-mode:screen;
-    }
-    body:after{
-      content:"";
-      position:absolute;inset:0;pointer-events:none;
-      background:repeating-linear-gradient(
-        0deg,transparent 0,transparent 3px,rgba(0,150,255,.035) 4px,transparent 5px
-      );
-      animation:scan 4s linear infinite;
-    }
-    .hud{
-      position:absolute;inset:0;pointer-events:none;
-      background-image:
-        radial-gradient(circle at 20% 30%,rgba(0,140,255,.16) 0 1px,transparent 2px),
-        radial-gradient(circle at 70% 65%,rgba(0,190,255,.12) 0 1px,transparent 2px);
-      background-size:90px 90px,130px 130px;
-      animation:drift 14s linear infinite;
-    }
-    .notice{
-      position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
-      padding:7px 14px;border:1px solid rgba(0,150,255,.35);
-      border-radius:999px;background:rgba(0,8,20,.65);
-      color:#79c8ff;font-size:12px;letter-spacing:.5px;
-      backdrop-filter:blur(5px)
-    }
-    @keyframes sweep{to{background-position:-220% 0}}
-    @keyframes scan{to{transform:translateY(5px)}}
-    @keyframes drift{to{background-position:90px 90px, -130px -130px}}
-    @media(max-width:700px){
-      body{background-position:center top}
-      .notice{font-size:10px;bottom:8px}
-    }
-  </style>
-</head>
-<body>
-  <div class="hud"></div>
-  <div class="notice">PS4 JAILBREAK • PSFree UI • Animated HUD Background</div>
-</body>
+    // Autostart countdown when page refresh
+    window.addEventListener('load', function () {
+      restartCountdown();
+    });
+  </script>
 </html>
